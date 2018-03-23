@@ -1,4 +1,5 @@
 require_relative('./customer')
+require_relative('./ticket')
 require_relative('../db/sql_runner')
 
 class Film
@@ -72,7 +73,28 @@ class Film
     return customers.map { |customer| Customer.new(customer) }
   end
 
+  def customer_count()
+    return self.customers().count
+  end
+
+  def sell_ticket(customer)
+    customer.funds -= @price
+    Ticket.new({ 'film_id' => @id, 'customer_id' => customer.id }).save()
+    customer.update()
+  end
+
   def tickets()
+    sql = "
+      SELECT * FROM tickets
+      WHERE film_id = $1
+    ;"
+    values = [@id]
+    tickets = SqlRunner.run(sql, values)
+    return tickets.map { |ticket| Ticket.new(ticket) }
+  end
+
+  def ticket_count()
+    return self.tickets().count
   end
 
 end

@@ -1,5 +1,7 @@
 require_relative('./film')
+require_relative('./ticket')
 require_relative('../db/sql_runner')
+
 
 class Customer
 
@@ -73,6 +75,21 @@ class Customer
   end
 
   def tickets()
+    sql = "
+      SELECT * FROM tickets
+      WHERE customer_id = $1
+    ;"
+    values = [@id]
+    tickets = SqlRunner.run(sql, values)
+    return tickets.map { |ticket| Ticket.new(ticket) }
+  end
+
+  def ticket_count()
+    return self.tickets().count
+  end
+
+  def buy_ticket(film)
+    film.sell_ticket(self) if @funds >= film.price
   end
 
 end
