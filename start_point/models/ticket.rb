@@ -7,6 +7,7 @@ class Ticket
     @id = options['id'].to_i unless options['id'] == nil
     @film_id = options['film_id'].to_i
     @customer_id = options['customer_id'].to_i
+    @screening_id = options['screening_id']
   end
 
   def self.all()
@@ -30,21 +31,21 @@ class Ticket
 
   def save()
     sql = "INSERT INTO tickets
-    (film_id, customer_id)
+    (film_id, customer_id, screening_id)
     VALUES
-    ($1, $2)
+    ($1, $2, $3)
     RETURNING id
     ;"
-    values = [@film_id, @customer_id]
+    values = [@film_id, @customer_id, @screening_id]
     id_array = SqlRunner.run(sql, values)
     @id = id_array.first['id'].to_i
   end
 
   def update()
     sql = "UPDATE tickets
-    SET (film_id, customer_id) = ($1, $2)
-    WHERE id = $3"
-    values = [@film_id, @customer_id, @id]
+    SET (film_id, customer_id, screening_id) = ($1, $2, $3)
+    WHERE id = $4"
+    values = [@film_id, @customer_id, @screening_id, @id]
     SqlRunner.run(sql, values)
   end
 
