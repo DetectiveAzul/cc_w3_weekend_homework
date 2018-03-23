@@ -1,5 +1,6 @@
 require_relative('./customer')
 require_relative('./ticket')
+require_relative('./screening')
 require_relative('../db/sql_runner')
 
 class Film
@@ -53,7 +54,7 @@ class Film
   end
 
   def delete()
-    sql = "DELETE from films
+    sql = "DELETE FROM films
     WHERE id = $1"
     values = [@id]
     SqlRunner.run(sql, values)
@@ -77,12 +78,6 @@ class Film
     return self.customers().count
   end
 
-  def sell_ticket(customer)
-    customer.funds -= @price
-    Ticket.new({ 'film_id' => @id, 'customer_id' => customer.id }).save()
-    customer.update()
-  end
-
   def tickets()
     sql = "
       SELECT * FROM tickets
@@ -93,8 +88,38 @@ class Film
     return tickets.map { |ticket| Ticket.new(ticket) }
   end
 
+  #To be fixed
+  def sell_ticket(customer, screening)
+    if screening.ticket_left > 0
+      customer.funds -= @price
+      Ticket.new({ 'film_id' => @id,
+        'customer_id' => customer.id ,
+        'screening_id' => screening.id
+      }).save()
+      customer.update()
+    end
+  end
+
   def ticket_count()
     return self.tickets().count
   end
 
+  def screenings()
+    sql = "
+      SELECT * FROM screenings
+      WHERE film_id = $1
+    ;"
+    values = [@id]
+    screenings = SqlRunner.run(sql, values)
+    return screenings.map { |screening| Screening.new(screening) }
+  end
+
+  def most_popular_screening()
+    screening_array = self.screenings()
+    most_popular_screening = screening_array.first
+    screening_array.each do |screening|
+      most_popular_screening = screening if screening.ticket_count() > most_popular_screening.ticket_count()
+      end
+    return most_popular_screening
+  end
 end

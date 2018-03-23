@@ -1,3 +1,5 @@
+require_relative('./screening')
+require('pry')
 class Ticket
 
   attr_reader :id
@@ -7,7 +9,7 @@ class Ticket
     @id = options['id'].to_i unless options['id'] == nil
     @film_id = options['film_id'].to_i
     @customer_id = options['customer_id'].to_i
-    @screening_id = options['screening_id']
+    @screening_id = options['screening_id'].to_i
   end
 
   def self.all()
@@ -30,15 +32,17 @@ class Ticket
   end
 
   def save()
-    sql = "INSERT INTO tickets
-    (film_id, customer_id, screening_id)
-    VALUES
-    ($1, $2, $3)
-    RETURNING id
-    ;"
-    values = [@film_id, @customer_id, @screening_id]
-    id_array = SqlRunner.run(sql, values)
-    @id = id_array.first['id'].to_i
+    if Screening.find(@screening_id).ticket_left > 0
+      sql = "INSERT INTO tickets
+      (film_id, customer_id, screening_id)
+      VALUES
+      ($1, $2, $3)
+      RETURNING id
+      ;"
+      values = [@film_id, @customer_id, @screening_id]
+      id_array = SqlRunner.run(sql, values)
+      @id = id_array.first['id'].to_i
+    end
   end
 
   def update()
@@ -50,7 +54,7 @@ class Ticket
   end
 
   def delete()
-    sql = "DELETE from tickets
+    sql = "DELETE FROM tickets
     WHERE id = $1"
     values = [@id]
     SqlRunner.run(sql, values)

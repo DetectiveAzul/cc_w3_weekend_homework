@@ -54,7 +54,7 @@ class Customer
   end
 
   def delete()
-    sql = "DELETE from customers
+    sql = "DELETE FROM customers
     WHERE id = $1"
     values = [@id]
     SqlRunner.run(sql, values)
@@ -88,8 +88,8 @@ class Customer
     return self.tickets().count
   end
 
-  def buy_ticket(film)
-    film.sell_ticket(self) if @funds >= film.price
+  def buy_ticket(film, screening)
+    film.sell_ticket(self, screening) if @funds >= film.price
   end
 
 end

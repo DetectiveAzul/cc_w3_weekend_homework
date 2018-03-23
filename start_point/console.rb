@@ -20,10 +20,14 @@ customer02.save()
 film01.save()
 film02.save()
 
-screening01 = Screening.new({ 'time_slot' => '12:00', 'film_id' => film01.id })
-screening02 = Screening.new({ 'time_slot' => '14:30', 'film_id' => film02.id })
-screening03 = Screening.new({ 'time_slot' => '17:00', 'film_id' => film01.id })
-screening04 = Screening.new({ 'time_slot' => '19:30', 'film_id' => film02.id })
+screening01 = Screening.new({ 'time_slot' => '12:00', 'film_id' => film01.id,
+  'stock' => 10 })
+screening02 = Screening.new({ 'time_slot' => '14:30', 'film_id' => film02.id,
+  'stock' => 12 })
+screening03 = Screening.new({ 'time_slot' => '17:00', 'film_id' => film01.id,
+  'stock' => 14 })
+screening04 = Screening.new({ 'time_slot' => '19:30', 'film_id' => film02.id,
+  'stock' => 8  })
 
 screening01.save()
 screening02.save()
@@ -42,10 +46,16 @@ ticket03 = Ticket.new({ 'film_id' => film02.id,
   'customer_id' => customer02.id,
   'screening_id' => screening02.id
 })
+ticket04 = Ticket.new({ 'film_id' => film02.id,
+  'customer_id' => customer02.id,
+  'screening_id' => screening04.id
+})
 
 ticket01.save()
 ticket02.save()
 ticket03.save()
+10.times { ticket04.save() }
+
 
 binding.pry
 nil
