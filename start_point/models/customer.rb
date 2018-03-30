@@ -20,6 +20,13 @@ class Customer
     return customers.map { |customer| Customer.new(customer) }
   end
 
+  def self.all_by_name()
+    sql = "SELECT * FROM customers
+    ORDER BY name;"
+    customers = SqlRunner.run(sql)
+    return customers.map { |customer| Customer.new(customer) }
+  end
+
   def self.delete_all()
     sql = "DELETE FROM customers;"
     SqlRunner.run(sql)
